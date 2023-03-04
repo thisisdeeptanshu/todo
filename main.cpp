@@ -52,7 +52,7 @@ int main()
 		}
 		else if (lower.find("set") != string::npos)
 		{
-			cin >> command2;
+			getline(cin, command2);
 			setTask(lower.find("daily") != string::npos, command2);
 		}
 		else if (lower == "remove")
@@ -83,7 +83,7 @@ int main()
 				unfinishTask(stoi(command2));
 			}
 			catch (...)
-			{ /* general kenobi! */ }
+			{ /* you are the bold one! */ }
 		}
 		else
 		{
@@ -148,11 +148,12 @@ void finishTask(int taskId)
 			val[val.size()] = tasks[i];
 			if (i == taskId)
 			{
-				string taskName = fw.write(tasks[i]["task"]);
+				val[val.size() - 1]["completed"] = true;
+				/*string taskName = fw.write(tasks[i]["task"]);
 				taskName = taskName.substr(1, taskName.length() - 3);
 				if (taskName.find("[completed]") == string::npos)
 					taskName += " [completed]";
-				val[val.size() - 1]["task"] = taskName;
+				val[val.size() - 1]["task"] = taskName;*/
 			}
 		}
 		ofstream f("tasks.json");
@@ -181,12 +182,14 @@ void unfinishTask(int taskId)
 			val[val.size()] = tasks[i];
 			if (i == taskId)
 			{
+				val[val.size() - 1]["completed"] = false;
+				/*
 				string taskName = fw.write(tasks[i]["task"]);
 				taskName = taskName.substr(1, taskName.length() - 3);
 				cout << "task name: " << taskName << endl;
 				if (taskName.find("[completed]") != string::npos)
 					taskName = taskName.substr(0, taskName.length() - 12);
-				val[val.size() - 1]["task"] = taskName;
+				val[val.size() - 1]["task"] = taskName; */
 			}
 		}
 		ofstream f("tasks.json");
@@ -211,6 +214,7 @@ void setTask(bool daily, string task)
 	{
 		val["task"] = task;
 		val["daily"] = daily;
+		val["completed"] = false;
 		Json::Value vec(Json::arrayValue);
 		vec.append(val);
 		ofstream f("tasks.json");
@@ -221,6 +225,7 @@ void setTask(bool daily, string task)
 	{
 		val["task"] = task;
 		val["daily"] = daily;
+		val["completed"] = false;
 		tasks[tasks.size()] = val;
 		ofstream f("tasks.json");
 		f << tasks;
@@ -250,7 +255,8 @@ void listTasks(bool show)
 				Json::FastWriter fw;
 				string taskName = fw.write(tasks[i]["task"]);
 				string isDaily = fw.write(tasks[i]["daily"]);
-				cout << "[" << i + 1 << "] " << taskName.substr(1, taskName.length() - 3) << (isDaily == "true\n" ? " [daily]" : "") <<  endl;
+				string isCompleted = fw.write(tasks[i]["completed"]);
+				cout << "[" << i + 1 << "] " << taskName.substr(1, taskName.length() - 3) << (isDaily == "true\n" ? " [daily] " : "") << (isCompleted == "true\n" ? " [completed] " : "")<<  endl;
 			}
 		}
 	}
